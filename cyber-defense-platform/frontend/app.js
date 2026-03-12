@@ -2,7 +2,8 @@
    CYBER GUARD IQ - Frontend Application Logic
    ============================================ */
 
-const API_BASE = window.location.origin + '/api';
+// Connect to remote API if specified in environment/window, otherwise use local origin
+const API_BASE = (window.ENV && window.ENV.API_URL) ? window.ENV.API_URL : (window.location.origin + '/api');
 
 // ── Utility Functions ──
 function showToast(message, type = 'info') {
