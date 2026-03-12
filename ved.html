@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Guard · animated defense + glow toolbox</title>
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #0b0f17;
+            color: #eef2fb;
+            line-height: 1.5;
+            padding: 1.5rem;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* subtle animated background (additional depth) */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -20%;
+            left: -10%;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle at 30% 40%, rgba(30, 100, 200, 0.08) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, rgba(0, 200, 255, 0.05) 0%, transparent 40%);
+            animation: bgDrift 40s infinite alternate;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @keyframes bgDrift {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(2%, 3%) scale(1.02); }
+        }
+
+        /* smooth modern container */
+        .platform {
+            max-width: 1440px;
+            margin: 0 auto;
+            background: rgba(12, 20, 30, 0.75);
+            backdrop-filter: blur(4px);
+            border-radius: 2.5rem;
+            padding: 2rem 2.2rem;
+            border: 1px solid rgba(78, 159, 255, 0.2);
+            box-shadow: 0 25px 45px -12px #03060c, 0 0 0 1px rgba(90, 170, 255, 0.1);
+            animation: fadeScale 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeScale {
+            0% { opacity: 0; transform: scale(0.96); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* header / navigation */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            0% { opacity: 0; transform: translateY(-18px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.2s ease;
+        }
+
+        .logo-area:hover {
+            transform: scale(1.02);
+        }
+
+        .logo-icon {
+            background: linear-gradient(145deg, #1f80f0, #1460c0);
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 8px 18px #0a1e3a;
+            animation: pulseGlow 3s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 8px 18px #0a1e3a; }
+            100% { box-shadow: 0 8px 25px #2f6fda; }
+        }
+
+        .logo-text h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(120deg, #ffffff, #b0d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text span {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #88b5f0;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            font-weight: 500;
+        }
+
+        .nav-links a {
+            color: #bfd6f0;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: 0.2s;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 4px;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background: #2f8cff;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: white;
+        }
+
+        .launch-btn {
+            background: #0f1a2b;
+            border: 1px solid #2f4b70;
+            color: white;
+            padding: 0.7rem 1.7rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            cursor: default;
+            box-shadow: 0 4px 12px rgba(0,30,70,0.6);
+            animation: float 4s infinite ease-in-out;
+        }
+
+        .launch-btn:hover {
+            border-color: #5f9eff;
+            background: #142b44;
+            box-shadow: 0 0 25px #2f8cff, 0 8px 18px #022036;
+            transform: scale(1.02) translateY(-2px);
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-3px); box-shadow: 0 8px 18px #022036; }
+            100% { transform: translateY(0); }
+        }
+
+        .launch-btn i {
+            color: #3d9cff;
+            transition: 0.2s;
+        }
+        .launch-btn:hover i {
+            color: #9bcaff;
+        }
+
+        /* ===== THREE FEATURE CARDS (TOOLBOX) with enhanced glow on hover ===== */
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.6rem;
+            margin: 2.5rem 0 2rem;
+        }
+
+        .feature-card {
+            background: #101b29;
+            border-radius: 2rem;
+            padding: 1.8rem 1.5rem;
+            border: 1px solid #233b55;
+            box-shadow: 0 12px 30px -12px #010314;
+            transition: all 0.35s cubic-bezier(0.2, 0, 0, 1);
+            opacity: 0;
+            animation: cardAppear 0.5s forwards;
+            animation-delay: calc(0.1s * var(--i));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-grid .feature-card:nth-child(1) { --i: 1; }
+        .tool-grid .feature-card:nth-child(2) { --i: 2; }
+        .tool-grid .feature-card:nth-child(3) { --i: 3; }
+
+        @keyframes cardAppear {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* main glow effect for toolbox cards */
+        .feature-card:hover {
+            border-color: #5f9eff;
+            background: #132131;
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 0 32px #2f8cff, 0 22px 35px -14px #0f2640;
+        }
+
+        /* additional rotating glow overlay */
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: var(--y, 0);
+            left: var(--x, 0);
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle at center, rgba(70, 160, 255, 0.4), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+            z-index: 1;
+        }
+
+        .feature-card:hover::before {
+            opacity: 0.3;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1.2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-header i {
+            font-size: 2rem;
+            color: #4b9aff;
+            background: #1b3149;
+            padding: 8px;
+            border-radius: 16px;
+            transition: 0.3s;
+        }
+
+        .feature-card:hover .card-header i {
+            transform: rotate(5deg) scale(1.1);
+            color: #b0dbff;
+            background: #25466b;
+            box-shadow: 0 0 20px #5f9eff;
+        }
+
+        .card-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .feature-card:hover .card-header h3 {
+            text-shadow: 0 0 8px #3d9cff;
+        }
+
+        .feature-card p {
+            color: #b0c5e0;
+            margin-bottom: 1.8rem;
+            font-size: 0.95rem;
+            transition: 0.2s;
+            position: relative;
+            z-index: 2;
+        }
+        .feature-card:hover p {
+            color: #e0edff;
+        }
+
+        .try-btn {
+            background: transparent;
+            border: 1px solid #336699;
+            color: #d1e2ff;
+            padding: 0.5rem 1.6rem;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: 0.2s;
+            text-decoration: none;
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .try-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(63, 149, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.4s, height 0.4s;
+        }
+
+        .try-btn:hover::before {
+            width: 200px;
+            height: 200px;
+        }
+
+        .try-btn:hover {
+            background: #1e3855;
+            border-color: #5f9eff;
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 0 22px #3f8aff;
+        }
+
+        /* agent section */
+        .agent-section {
+            background: #0b141f;
+            border-radius: 2rem;
+            border: 1px solid #1f3d5e;
+            padding: 1.5rem 2rem;
+            margin: 2rem 0 2.2rem;
+            box-shadow: inset 0 0 0 1px #1c3146, 0 15px 25px -20px #000;
+            transition: 0.3s;
+        }
+
+        .agent-section:hover {
+            border-color: #4b8fd8;
+            box-shadow: inset 0 0 0 1px #3570b0, 0 0 30px #1f4f8f;
+        }
+
+        .agent-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+            animation: slideInLeft 0.6s;
+        }
+
+        .agent-header h2 {
+            font-size: 1.7rem;
+            font-weight: 600;
+            background: linear-gradient(120deg, #c4e0ff, #b0d2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .agent-badge {
+            background: #11304d;
+            border-radius: 60px;
+            padding: 0.2rem 1.2rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid #1d628f;
+            color: #aad0ff;
+            letter-spacing: 0.3px;
+            animation: blinkBadge 2.5s infinite;
+        }
+
+        @keyframes blinkBadge {
+            0%,100% { opacity: 1; border-color: #1d628f; }
+            50% { opacity: 0.8; border-color: #4ba5ff; background: #1f4165; }
+        }
+
+        .agent-terminal {
+            background: #030a14;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            font-family: 'Fira Code', 'JetBrains Mono', monospace;
+            border: 1px solid #26527f;
+            box-shadow: 0 5px 0 #02070e;
+            transition: 0.3s;
+        }
+
+        .agent-terminal:hover {
+            border-color: #5293dd;
+            box-shadow: 0 0 22px #1f4f8f, 0 5px 0 #02070e;
+        }
+
+        .terminal-line {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            color: #bcd5ff;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .prompt {
+            color: #5effb2;
+            font-weight: 500;
+            animation: cursorBlink 1.2s infinite;
+        }
+
+        .cmd {
+            color: #ffb86b;
+        }
+
+        .output {
+            color: #9bbaff;
+            margin-left: 1.8rem;
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+
+        .output:hover {
+            color: #cbe0ff;
+            transform: translateX(4px);
+        }
+
+        .success {
+            color: #6fcf97;
+        }
+
+        .phase-tag {
+            background: #1b334f;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #aac9ff;
+            transition: 0.2s;
+        }
+
+        .phase-tag:hover {
+            background: #2b4d77;
+        }
+
+        /* plugin marketplace */
+        .marketplace-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 2.5rem 0 1.5rem;
+            animation: fadeIn 0.8s;
+        }
+
+        .marketplace-header h3 {
+            font-size: 1.9rem;
+            font-weight: 650;
+            letter-spacing: -0.3px;
+            background: linear-gradient(145deg, #fff, #b0d0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .plugin-stats {
+            background: #0e1a28;
+            border-radius: 40px;
+            padding: 0.4rem 1.2rem;
+            border: 1px solid #2d4c73;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .plugin-stats:hover {
+            border-color: #5d90cf;
+            transform: scale(1.02);
+            box-shadow: 0 0 15px #4f8fd6;
+        }
+
+        .plugin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.6rem;
+        }
+
+        .plugin-card {
+            background: #0f1c2c;
+            border-radius: 1.8rem;
+            padding: 1.4rem 1.4rem 1.4rem 1.4rem;
+            border: 1px solid #243b55;
+            transition: all 0.3s cubic-bezier(0.17, 0.67, 0.21, 1.1);
+            box-shadow: 0 8px 16px -12px #030712;
+            opacity: 0;
+            animation: cardRise 0.5s forwards;
+            animation-delay: calc(0.05s * var(--j));
+        }
+
+        .plugin-grid .plugin-card:nth-child(1) { --j: 1; }
+        .plugin-grid .plugin-card:nth-child(2) { --j: 2; }
+        .plugin-grid .plugin-card:nth-child(3) { --j: 3; }
+        .plugin-grid .plugin-card:nth-child(4) { --j: 4; }
+        .plugin-grid .plugin-card:nth-child(5) { --j: 5; }
+        .plugin-grid .plugin-card:nth-child(6) { --j: 6; }
+        .plugin-grid .plugin-card:nth-child(7) { --j: 7; }
+        .plugin-grid .plugin-card:nth-child(8) { --j: 8; }
+        .plugin-grid .plugin-card:nth-child(9) { --j: 9; }
+
+        @keyframes cardRise {
+            0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .plugin-card:hover {
+            border-color: #5f9eff;
+            background: #132436;
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 0 28px #2f8cff, 0 20px 28px -14px #090e18;
+        }
+
+        .plugin-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .plugin-title h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .version {
+            font-size: 0.75rem;
+            background: #1f324b;
+            padding: 0.2rem 0.6rem;
+            border-radius: 30px;
+            color: #adcbff;
+            transition: 0.2s;
+        }
+
+        .plugin-card:hover .version {
+            background: #2f4c74;
+            color: #ffffff;
+        }
+
+        .plugin-desc {
+            font-size: 0.85rem;
+            color: #b0c6e5;
+            margin: 0.7rem 0 1rem;
+            line-height: 1.4;
+            transition: 0.2s;
+        }
+
+        .plugin-card:hover .plugin-desc {
+            color: #d5e6ff;
+        }
+
+        .badge-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.9rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: #12263d;
+            border-radius: 40px;
+            padding: 0.25rem 1rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border: 1px solid #2c527a;
+            color: #c3dbff;
+            transition: 0.2s;
+        }
+
+        .badge:hover {
+            background: #1e3b60;
+            transform: translateY(-2px);
+            border-color: #5f9eff;
+            box-shadow: 0 0 12px #3d8aff;
+        }
+
+        .badge.premium {
+            background: #2b3f28;
+            border-color: #5f9a6b;
+            color: #bfffc4;
+        }
+
+        .badge.free {
+            background: #253b4b;
+            border-color: #33799e;
+        }
+
+        .plugin-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+            border-top: 1px solid #1f3145;
+            padding-top: 0.8rem;
+        }
+
+        .author {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            color: #7e9bc2;
+            transition: 0.2s;
+        }
+
+        .author:hover {
+            color: #b3d0ff;
+            text-shadow: 0 0 5px #2f8cff;
+        }
+
+        .stats {
+            display: flex;
+            gap: 0.9rem;
+            font-size: 0.8rem;
+            color: #7e9bc2;
+        }
+
+        .stats span {
+            transition: 0.2s;
+            cursor: default;
+        }
+
+        .stats span:hover {
+            color: #d6e6ff;
+            transform: scale(1.1);
+            text-shadow: 0 0 8px #428eff;
+        }
+
+        .stats i {
+            margin-right: 3px;
+            color: #527fb2;
+        }
+
+        /* bottom-tools */
+        .bottom-tools {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.6rem;
+            margin: 2.2rem 0 1.2rem;
+        }
+
+        .bottom-card {
+            background: #101c2c;
+            border-radius: 1.8rem;
+            padding: 1.5rem 1.5rem;
+            border: 1px solid #263f5b;
+            transition: all 0.3s;
+            opacity: 0;
+            animation: cardFade 0.6s forwards;
+            animation-delay: calc(0.1s * var(--k));
+        }
+
+        .bottom-tools .bottom-card:nth-child(1) { --k: 1; }
+        .bottom-tools .bottom-card:nth-child(2) { --k: 2; }
+        .bottom-tools .bottom-card:nth-child(3) { --k: 3; }
+
+        @keyframes cardFade {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .bottom-card:hover {
+            border-color: #5f9eff;
+            background: #14273f;
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: 0 0 28px #2f8cff, 0 15px 25px -14px #0d213a;
+        }
+
+        .bottom-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .bottom-card p {
+            color: #b1c8ea;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .learn-more {
+            color: #9cc2ff;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: default;
+            transition: 0.2s;
+        }
+
+        .learn-more:hover {
+            gap: 10px;
+            color: white;
+            text-shadow: 0 0 10px #1e90ff;
+        }
+
+        hr {
+            border: 0.5px solid #1d334d;
+            margin: 2rem 0 1rem;
+        }
+
+        .footnote {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #7d9bc7;
+            font-size: 0.9rem;
+        }
+
+        .footnote i {
+            margin-right: 0.4rem;
+            color: #3f80d5;
+            transition: 0.2s;
+        }
+
+        .footnote span:hover i {
+            transform: rotate(8deg) scale(1.2);
+            color: #87b9ff;
+        }
+
+        .flex-row {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .flex-row span {
+            transition: 0.2s;
+            cursor: default;
+        }
+
+        .flex-row span:hover {
+            color: #e0f0ff;
+            text-shadow: 0 0 8px #1b4d8a;
+        }
+
+        @media (max-width: 800px) {
+            .tool-grid, .bottom-tools, .plugin-grid {
+                grid-template-columns: 1fr;
+            }
+            .top-bar {
+                flex-direction: column;
+                align-items: start;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="platform">
+
+    <!-- top navigation with "Cyber Guard" -->
+    <div class="top-bar">
+        <div class="logo-area">
+            <div class="logo-icon"><i class="fas fa-shield-halved"></i></div>
+            <div class="logo-text">
+                <h1>Cyber Guard IQ</h1>
+                <span>Your Personal Cyber Defense Platform</span>
+            </div>
+        </div>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">Dashboard</a>
+            <a href="#">Features</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+        </div>
+        <div class="launch-btn">
+            <i class="fas fa-rocket"></i> Launch Dashboard
+        </div>
+    </div>
+
+    <!-- THREE CORE TOOLS (TOOLBOX) with glow + animations -->
+    <div class="tool-grid">
+        <div class="feature-card">
+            <div class="card-header">
+                <i class="fas fa-envelope-open-text"></i>
+                <h3>Phishing Detection</h3>
+            </div>
+            <p>Advanced URL and email analysis to identify sophisticated phishing attempts before they harm you.</p>
+            <div class="try-btn"><i class="fas fa-flask"></i> Try Tool</div>
+        </div>
+        <div class="feature-card">
+            <div class="card-header">
+                <i class="fas fa-lock"></i>
+                <h3>Password Analyzer</h3>
+            </div>
+            <p>Check password strength, identify weaknesses, and get suggestions for stronger credentials.</p>
+            <div class="try-btn"><i class="fas fa-flask"></i> Try Tool</div>
+        </div>
+        <div class="feature-card">
+            <div class="card-header">
+                <i class="fas fa-comment-sms"></i>
+                <h3>SMS Scam Detector</h3>
+            </div>
+            <p>Analyze text messages for scam patterns, suspicious links, and social engineering tactics.</p>
+            <div class="try-btn"><i class="fas fa-flask"></i> Try Tool</div>
+        </div>
+    </div>
+
+    <!-- HACKBOT AGENT section -->
+    <div class="agent-section">
+        <div class="agent-header">
+            <i class="fas fa-robot" style="font-size: 2.2rem; color: #67b0ff;"></i>
+            <h2>HackBot · AI Cybersecurity Assistant</h2>
+            <span class="agent-badge">Agent Mode active</span>
+        </div>
+        <div class="agent-terminal">
+            <div class="terminal-line">
+                <span class="prompt">$</span> <span class="cmd">hackbot agent_scan scanme.nmap.org</span>
+            </div>
+            <div class="output"><span class="phase-tag">Phase 1: Recon</span> nmap -sV -sC scanme.nmap.org</div>
+            <div class="output success">✓ SUCCESS (exit=0) 32.15s</div>
+            <div class="output">PORT     STATE    SERVICE    VERSION</div>
+            <div class="output">22/tcp   open     ssh        OpenSSH 6.6</div>
+            <div class="output">80/tcp   open     http       Apache 2.4.7</div>
+            <div class="output"><span class="phase-tag">Phase 2: Web scan</span> injecting payloads …</div>
+            <div class="terminal-line" style="margin-top: 8px;">
+                <span class="prompt">▶</span> <span style="color: #bbd9ff;">AI analysis: OpenSSH version vulnerable to CVE-2016-* (simulated)</span>
+            </div>
+        </div>
+        <div style="display: flex; gap: 1.5rem; margin-top: 1.2rem; font-size:0.9rem; color:#83aaeb; flex-wrap:wrap;">
+            <span><i class="fab fa-python"></i> Python 3.9+</span>
+            <span><i class="fas fa-key"></i> MIT License</span>
+            <span><i class="fas fa-globe"></i> Cross‑Platform</span>
+            <span><i class="fas fa-puzzle-piece"></i> Plugin System</span>
+        </div>
+    </div>
+
+    <!-- Plugin Marketplace -->
+    <div class="marketplace-header">
+        <h3><i class="fas fa-puzzle-piece" style="margin-right: 10px;"></i>Plugin Marketplace</h3>
+        <div class="plugin-stats"><i class="fas fa-cubes"></i> 9+ plugins · Open source · Free</div>
+    </div>
+
+    <div class="plugin-grid">
+        <!-- Nmap Advanced Scanner -->
+        <div class="plugin-card">
+            <div class="plugin-title">
+                <h4>Nmap Advanced Scanner</h4>
+                <span class="version">v2.1.0</span>
+            </div>
+            <div class="plugin-desc">Enhanced nmap integration with auto‑target profiling, NSE scripts, smart scheduling.</div>
+            <div class="badge-row">
+                <span class="badge premium">Premium</span>
+                <span class="badge free">Freeware</span>
+                <span class="badge">Beta</span>
+            </div>
+            <div class="plugin-footer">
+                <span class="author"><i class="fas fa-user-shield"></i> securitypro</span>
+                <div class="stats"><span><i class="fas fa-heart"></i> 2.8k</span> <span><i class="fas fa-code-branch"></i> 156</span></div>
+            </div>
+        </div>
+        <!-- Subdomain Bruter -->
+        <div class="plugin-card">
+            <div class="plugin-title"><h4>Subdomain Bruter</h4><span class="version">v1.5.3</span></div>
+            <div class="plugin-desc">Multi‑engine subdomain enum: DNS brute, certificate transparency, web scraping.</div>
+            <div class="badge-row"><span class="badge premium">Premium</span><span class="badge free">Freeware</span><span class="badge">Beta</span></div>
+            <div class="plugin-footer"><span class="author"><i class="fas fa-user-secret"></i> recon_untested</span><div class="stats"><span><i class="fas fa-heart"></i> 1.6k</span><span><i class="fas fa-code-branch"></i> 68</span></div></div>
+        </div>
+        <!-- SQLI Payload Generator -->
+        <div class="plugin-card">
+            <div class="plugin-title"><h4>SQLI Payload Generator</h4><span class="version">v1.0.0</span></div>
+            <div class="plugin-desc">AI‑assisted SQL injection payloads for MySQL, PG, MSSQL, Oracle.</div>
+            <div class="badge-row"><span class="badge premium">Premium</span><span class="badge free">Freeware</span><span class="badge">Beta</span></div>
+            <div class="plugin-footer"><span class="author"><i class="fas fa-bug"></i> sqlslit_drey</span><div class="stats"><span><i class="fas fa-heart"></i> 3.5k</span><span><i class="fas fa-code-branch"></i> 203</span></div></div>
+        </div>
+        <!-- OSINT Email Hunter -->
+        <div class="plugin-card">
+            <div class="plugin-title"><h4>OSINT Email Hunter</h4><span class="version">v1.2.7</span></div>
+            <div class="plugin-desc">Discover emails from public sources, breach DBs, social media.</div>
+            <div class="badge-row"><span class="badge">Email</span><span class="badge">Preventing</span></div>
+            <div class="plugin-footer"><span class="author"><i class="fas fa-user-tie"></i> saint_supp</span><div class="stats"><span><i class="fas fa-heart"></i> 1.6k</span><span><i class="fas fa-code-branch"></i> 87</span></div></div>
+        </div>
+        <!-- PDF Report Pro -->
+        <div class="plugin-card">
+            <div class="plugin-title"><h4>PDF Report Pro</h4><span class="version">v3.0.1</span></div>
+            <div class="plugin-desc">Pentest reports with templates, executive summary, charts, compliance.</div>
+            <div class="badge-row"><span class="badge">Export</span><span class="badge">Export</span><span class="badge">Export</span></div>
+            <div class="plugin-footer"><span class="author"><i class="fas fa-chart-line"></i> report_guru</span><div class="stats"><span><i class="fas fa-heart"></i> 4.2k</span><span><i class="fas fa-code-branch"></i> 312</span></div></div>
+        </div>
+        <!-- Network Mapper 3D -->
+        <div class="plugin-card">
+            <div class="plugin-title"><h4>Network Mapper 3D</h4><span class="version">v1.1.0</span></div>
+            <div class="plugin-desc">Visualize network topology in 3D (WebGL). Import nmap, live discovery.</div>
+            <div class="badge-row"><span class="badge">Network</
