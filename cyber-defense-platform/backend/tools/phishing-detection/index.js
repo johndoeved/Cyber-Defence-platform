@@ -126,19 +126,26 @@ function analyzeUrlJS(url) {
     };
 }
 
-// DNS resolution check
+// DNS resolution check with 3s timeout
 function checkDNS(hostname) {
     return new Promise((resolve) => {
+        const timeout = setTimeout(() => {
+            resolve(false);
+        }, 3000);
+
         try {
             const cleanHost = hostname.replace(/^(https?:\/\/)/, '').split('/')[0].split(':')[0];
             dns.resolve(cleanHost, (err) => {
+                clearTimeout(timeout);
                 resolve(!err);
             });
         } catch {
+            clearTimeout(timeout);
             resolve(false);
         }
     });
 }
+
 
 // POST /analyze
 router.post('/analyze', async (req, res) => {

@@ -41,8 +41,9 @@ class DigitalFootprintScanner:
             response = requests.get(
                 f'https://haveibeenpwned.com/api/v3/breachedaccount/{self.email}',
                 headers=headers,
-                timeout=10
+                timeout=5
             )
+
             
             if response.status_code == 200:
                 data = response.json()
@@ -79,7 +80,7 @@ class DigitalFootprintScanner:
         return breaches
 
     def search_social_media(self):
-        """Check username availability on major platforms"""
+        """Check username availability on major platforms in parallel"""
         if not self.username:
             return []
         
@@ -99,27 +100,40 @@ class DigitalFootprintScanner:
         accounts = []
         username_hash = sum(ord(c) for c in self.username)
         
-        for idx, platform in enumerate(platforms):
+        import requests
+        from concurrent.futures import ThreadPoolExecutor
+
+        def check_platform(idx_platform):
+            idx, platform = idx_platform
             try:
-                import requests
-                response = requests.head(platform['url'], timeout=5, allow_redirects=True)
+                # Use a shorter timeout and a proper User-Agent
+                response = requests.head(
+                    platform['url'], 
+                    timeout=2, 
+                    allow_redirects=True,
+                    headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+                )
                 found = response.status_code == 200
             except Exception:
                 found = (username_hash + idx) % 3 == 0
             
-            accounts.append({
+            return {
                 'platform': platform['name'],
                 'url': platform['url'],
                 'icon': platform['icon'],
                 'found': found,
                 'status': 'Profile Found' if found else 'Not Found'
-            })
+            }
+
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            accounts = list(executor.map(check_platform, enumerate(platforms)))
         
         found_count = sum(1 for a in accounts if a['found'])
         self.results['social_accounts'] = accounts
         self.results['risk_score'] += found_count * 5
         
         return accounts
+
 
     def search_google(self):
         """Perform Google search for email/username"""

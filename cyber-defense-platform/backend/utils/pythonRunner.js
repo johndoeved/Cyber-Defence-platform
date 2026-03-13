@@ -26,6 +26,13 @@ class PythonRunner {
             const shell = new PythonShell(path.basename(scriptPath), options);
             let results = [];
 
+            // Add timeout
+            const timeout = setTimeout(() => {
+                shell.terminate();
+                reject(new Error(`Python script execution timed out after 12.5s: ${scriptPath}`));
+            }, 12500);
+
+
             if (input) {
                 shell.send(input);
             }
@@ -35,11 +42,16 @@ class PythonRunner {
             });
 
             shell.on('error', (err) => {
+                clearTimeout(timeout);
+                console.error(`Python script error (${scriptPath}):`, err);
                 reject(err);
             });
 
             shell.end((err) => {
+                clearTimeout(timeout);
                 if (err) {
+
+                    console.error(`Python script execution failed (${scriptPath}):`, err);
                     reject(err);
                 } else {
                     try {
@@ -49,10 +61,11 @@ class PythonRunner {
                             const lastResult = results[results.length - 1];
                             resolve(typeof lastResult === 'string' ? JSON.parse(lastResult) : lastResult);
                         } else {
-                            resolve({ success: false, error: 'No output from Python script' });
+                            resolve({ success: false, error: 'No output from Python script', details: 'Check if script prints JSON to stdout' });
                         }
                     } catch (parseError) {
-                        resolve({ raw: results.join('\n') });
+                        console.error('Failed to parse Python output:', results.join('\n'));
+                        resolve({ raw: results.join('\n'), parseError: true });
                     }
                 }
             });
@@ -77,6 +90,13 @@ class PythonRunner {
             const shell = new PythonShell(path.basename(scriptPath), options);
             let output = '';
 
+            // Add timeout
+            const timeout = setTimeout(() => {
+                shell.terminate();
+                reject(new Error(`Python script execution timed out after 12.5s: ${scriptPath}`));
+            }, 12500);
+
+
             shell.send(JSON.stringify(inputData));
 
             shell.on('message', (message) => {
@@ -84,17 +104,22 @@ class PythonRunner {
             });
 
             shell.on('error', (err) => {
+                clearTimeout(timeout);
+                console.error(`Python script error (${scriptPath}):`, err);
                 reject(err);
             });
 
             shell.end((err) => {
+                clearTimeout(timeout);
                 if (err) {
+                    console.error(`Python script execution failed (${scriptPath}):`, err);
                     reject(err);
                 } else {
                     try {
                         resolve(JSON.parse(output));
                     } catch (parseError) {
-                        resolve({ raw: output });
+                        console.error('Failed to parse Python output:', output);
+                        resolve({ raw: output, parseError: true });
                     }
                 }
             });

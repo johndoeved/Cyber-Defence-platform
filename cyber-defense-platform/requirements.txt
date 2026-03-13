@@ -1,5 +1,7 @@
-requests==2.31.0
-beautifulsoup4==4.12.2
 python-whois==0.8.0
 nltk==3.8.1
 textblob==0.17.1
+requests==2.31.0
+beautifulsoup4==4.12.2
+whois==0.9.27
+

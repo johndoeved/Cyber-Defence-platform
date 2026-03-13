@@ -44,10 +44,14 @@ npm start
 
 ```bash
 cd backend
-npm run dev   # Auto-restarts on file changes
+npm.cmd run dev   # Use npm.cmd on Windows if you see a script execution error
 ```
 
+> [!TIP]
+> **Windows Users:** If you get an "Execution Policy" error, use **`npm.cmd`** instead of `npm`, or simply run the provided **`start-platform.bat`** file in the root directory.
+
 ### Python Dependencies (Optional)
+
 
 ```bash
 pip install requests beautifulsoup4 python-whois nltk textblob

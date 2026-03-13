@@ -39,39 +39,29 @@ class PhishingAnalyzer:
         return {'special_char_count': count, 'characters': special_chars}
 
     def analyze_domain_age(self):
-        """Check domain characteristics (simulated when whois unavailable)"""
+        """Analyze domain characteristics (without slow WHOIS lookups)"""
         domain = self.parsed.hostname or ''
-        result = {'domain': domain, 'check_performed': False}
+        result = {'domain': domain, 'check_performed': True}
         
-        try:
-            import whois
-            w = whois.whois(domain)
-            if w.creation_date:
-                creation = w.creation_date
-                if isinstance(creation, list):
-                    creation = creation[0]
-                age_days = (datetime.now() - creation).days
-                result['age_days'] = age_days
-                result['check_performed'] = True
-                if age_days < 30:
-                    self.indicators.append(f'Domain is very new ({age_days} days old)')
-                    self.score += 25
-                elif age_days < 90:
-                    self.indicators.append(f'Domain is relatively new ({age_days} days old)')
-                    self.score += 15
-        except Exception:
-            # Use heuristic analysis when whois is unavailable
-            suspicious_tlds = ['.xyz', '.top', '.club', '.work', '.date', '.racing',
-                             '.win', '.bid', '.stream', '.download', '.gdn', '.loan',
-                             '.men', '.click', '.link', '.zip', '.mov']
-            for tld in suspicious_tlds:
-                if domain.endswith(tld):
-                    self.indicators.append(f'Domain uses suspicious TLD: {tld}')
-                    self.score += 15
-                    result['suspicious_tld'] = True
-                    break
-
+        # Use heuristic analysis instead of slow WHOIS
+        suspicious_tlds = ['.xyz', '.top', '.club', '.work', '.date', '.racing',
+                            '.win', '.bid', '.stream', '.download', '.gdn', '.loan',
+                            '.men', '.click', '.link', '.zip', '.mov']
+        
+        for tld in suspicious_tlds:
+            if domain.endswith(tld):
+                self.indicators.append(f'Domain uses suspicious TLD: {tld}')
+                self.score += 15
+                result['suspicious_tld'] = True
+                break
+        
+        # Check for very long subdomains or common phishing patterns
+        if domain.count('.') > 3:
+            self.indicators.append('Domain has an excessive number of subdomains')
+            self.score += 15
+            
         return result
+
 
     def analyze_ssl_certificate(self):
         """Check SSL certificate (simulated analysis)"""
