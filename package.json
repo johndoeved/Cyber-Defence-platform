@@ -4,11 +4,10 @@
   "description": "Cyber Guard IQ - Advanced Cybersecurity Platform",
   "main": "backend/server.js",
   "scripts": {
-    "start": "cd backend && node server.js",
-    "dev": "cd backend && nodemon server.js",
-    "install-backend": "cd backend && npm install",
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
     "install-python": "pip install -r requirements.txt",
-    "setup": "npm run install-backend && npm run install-python"
+    "setup": "npm install && npm run install-python"
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -24,5 +23,8 @@
   },
   "keywords": ["cybersecurity", "phishing", "password", "security"],
   "author": "Cyber Guard IQ",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
 }
